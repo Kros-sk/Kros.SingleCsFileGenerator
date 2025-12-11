@@ -8,16 +8,64 @@ namespace Kros.SingleCsFileGenerator;
 /// </summary>
 public partial class GenerateCSharpSingleFileTask : Microsoft.Build.Utilities.Task
 {
-    private const string DefaultSdk = "Microsoft.NET.Sdk";
+    #region Nested types
 
-    [GeneratedRegex(@"^\s*namespace\s+[\w.]+\s*;\s*$", RegexOptions.Compiled)]
+    internal class SourceContext
+    {
+        public HashSet<string> Usings { get; } = new(StringComparer.Ordinal);
+        public HashSet<string> Namespaces { get; } = new(StringComparer.Ordinal);
+        public List<(string Path, List<string> BodyLines)> SourceFiles { get; } = [];
+
+        public HashSet<string> FilterInternalUsings()
+        {
+            HashSet<string> filteredUsings = new(StringComparer.Ordinal);
+
+            foreach (string usingDirective in Usings)
+            {
+                bool isInternal = false;
+                foreach (string ns in Namespaces)
+                {
+                    // Check if using references this namespace or a sub-namespace.
+                    if (usingDirective.Contains($"using {ns};", StringComparison.Ordinal)
+                        || usingDirective.Contains($"using {ns}.", StringComparison.Ordinal))
+                    {
+                        isInternal = true;
+                        break;
+                    }
+                }
+
+                if (!isInternal)
+                {
+                    filteredUsings.Add(usingDirective);
+                }
+            }
+
+            return filteredUsings;
+        }
+    }
+
+    #endregion Nested types
+
+    private const string ThisProjectPackageName = "Kros.SingleCsFileGenerator";
+    private const string DefaultSdk = "Microsoft.NET.Sdk";
+    private const string ProgramCsFileName = "Program.cs";
+
+    [GeneratedRegex(@"^\s*namespace\s+(?<namespace>[\w.]+)\s*;\s*$", RegexOptions.Compiled)]
     private static partial Regex NamespaceDeclarationRegex();
+
+    [GeneratedRegex(@"^\s*(global\s+)?using\s+(?<using>[\w.]+)\s*;\s*$", RegexOptions.Compiled)]
+    private static partial Regex UsingDeclarationRegex();
+
+    /// <summary>
+    /// Name of the project which is converted to single file.
+    /// </summary>
+    public string ProjectName { get; set; } = string.Empty;
 
     /// <summary>
     /// The source C# files to merge.
     /// </summary>
     [Required]
-    public ITaskItem[] Sources { get; set; } = [];
+    public ITaskItem[] SourceFiles { get; set; } = [];
 
     /// <summary>
     /// The output file path for the merged C# file.
@@ -26,7 +74,7 @@ public partial class GenerateCSharpSingleFileTask : Microsoft.Build.Utilities.Ta
     public string OutputFile { get; set; } = string.Empty;
 
     /// <summary>
-    /// The SDK used by the project (e.g., Microsoft.NET.Sdk.Web).
+    /// The SDK used by the project (e.g., Microsoft.NET.Sdk, Microsoft.NET.Sdk.Web). Default is Microsoft.NET.Sdk.
     /// </summary>
     public string ProjectSdk { get; set; } = DefaultSdk;
 
@@ -44,132 +92,10 @@ public partial class GenerateCSharpSingleFileTask : Microsoft.Build.Utilities.Ta
     {
         try
         {
-            var usings = new HashSet<string>(StringComparer.Ordinal);
-            var fileContents = new List<(string Path, List<string> BodyLines)>();
-
-            // Sort sources so Program.cs is processed last
-            var sortedSources = Sources
-                .OrderBy(s => Path.GetFileName(s.GetMetadata("FullPath") ?? s.ItemSpec)
-                    .Equals("Program.cs", StringComparison.OrdinalIgnoreCase) ? 1 : 0)
-                .ToList();
-
-            foreach (var source in sortedSources)
-            {
-                var path = source.GetMetadata("FullPath");
-                if (string.IsNullOrEmpty(path))
-                {
-                    path = source.ItemSpec;
-                }
-
-                if (!File.Exists(path))
-                {
-                    Log.LogWarning($"Source file not found: {path}");
-                    continue;
-                }
-
-                var bodyLines = new List<string>();
-                var lines = File.ReadAllLines(path);
-
-                foreach (var line in lines)
-                {
-                    var trimmedStart = line.TrimStart();
-                    var trimmedEnd = line.TrimEnd();
-
-                    // Handle regular and global using directives
-                    if ((trimmedStart.StartsWith("using ") || trimmedStart.StartsWith("global using "))
-                        && trimmedEnd.EndsWith(';'))
-                    {
-                        usings.Add(line.Trim());
-                    }
-                    // Skip namespace declarations (file-scoped namespaces)
-                    else if (NamespaceDeclarationRegex().IsMatch(line))
-                    {
-                        // Skip namespace declaration
-                        continue;
-                    }
-                    else
-                    {
-                        bodyLines.Add(line);
-                    }
-                }
-
-                fileContents.Add((path, bodyLines));
-            }
-
-            // Filter out internal usings (those referencing project namespaces)
-            var filteredUsings = FilterInternalUsings(usings);
-
-            // Build output content
-            var outputLines = new List<string>();
-
-            // Add SDK directive
-            if (!string.IsNullOrEmpty(ProjectSdk) && ProjectSdk != DefaultSdk)
-            {
-                outputLines.Add($"#:sdk {ProjectSdk}");
-            }
-
-            // Add package directives
-            foreach (var package in PackageReferences)
-            {
-                var packageName = package.ItemSpec;
-
-                // Skip Kros.SingleCsFileGenerator
-                if (packageName.Equals("Kros.SingleCsFileGenerator", StringComparison.OrdinalIgnoreCase))
-                {
-                    continue;
-                }
-
-                var version = package.GetMetadata("Version");
-                if (!string.IsNullOrEmpty(version))
-                {
-                    outputLines.Add($"#:package {packageName}@{version}");
-                }
-                else
-                {
-                    outputLines.Add($"#:package {packageName}");
-                }
-            }
-
-            if (outputLines.Count > 0)
-            {
-                outputLines.Add(string.Empty);
-            }
-
-            // Add header comments
-            outputLines.Add("// Auto-generated single-file.");
-            outputLines.Add("// Sources:");
-
-            foreach (var (path, _) in fileContents)
-            {
-                outputLines.Add($"// - {path}");
-            }
-
-            outputLines.Add(string.Empty);
-
-            // Add sorted usings (filtered)
-            foreach (var usingDirective in filteredUsings.OrderBy(u => u, StringComparer.Ordinal))
-            {
-                outputLines.Add(usingDirective);
-            }
-
-            outputLines.Add(string.Empty);
-
-            // Add body lines from all files
-            foreach (var (_, bodyLines) in fileContents)
-            {
-                outputLines.AddRange(bodyLines);
-            }
-
-            // Ensure output directory exists
-            var outputDir = Path.GetDirectoryName(OutputFile);
-            if (!string.IsNullOrEmpty(outputDir) && !Directory.Exists(outputDir))
-            {
-                Directory.CreateDirectory(outputDir);
-            }
-
-            // Write output file
-            File.WriteAllLines(OutputFile, outputLines);
-
+            List<ITaskItem> sortedSourceFiles = SortSourceFiles();
+            SourceContext context = LoadSourceFiles(sortedSourceFiles);
+            List<string> output = BuildOutput(context);
+            SaveOutput(output);
             Log.LogMessage(MessageImportance.High, $"Created merged C# file: {OutputFile}");
             return true;
         }
@@ -180,69 +106,149 @@ public partial class GenerateCSharpSingleFileTask : Microsoft.Build.Utilities.Ta
         }
     }
 
-    private HashSet<string> FilterInternalUsings(HashSet<string> usings)
+    private static string GetTaskItemFilePath(ITaskItem item)
     {
-        var filtered = new HashSet<string>(StringComparer.Ordinal);
+        string? path = item.GetMetadata("FullPath");
+        return string.IsNullOrEmpty(path) ? item.ItemSpec : path;
+    }
 
-        // Collect all namespace patterns to filter out
-        var internalNamespaces = new HashSet<string>(StringComparer.Ordinal);
+    private static string GetTaskItemFileName(ITaskItem item)
+        => Path.GetFileName(GetTaskItemFilePath(item));
 
-        // If RootNamespace is provided, use it
-        if (!string.IsNullOrEmpty(RootNamespace))
+    private List<ITaskItem> SortSourceFiles()
+        => SourceFiles
+            .OrderBy(s => ProgramCsFileName.Equals(GetTaskItemFileName(s), StringComparison.OrdinalIgnoreCase) ? 1 : 0)
+            .ToList();
+
+    private SourceContext LoadSourceFiles(IEnumerable<ITaskItem> sourceFiles)
+    {
+        SourceContext context = new();
+        foreach (ITaskItem sourceFile in sourceFiles)
         {
-            internalNamespaces.Add(RootNamespace);
-        }
-
-        // Also detect namespaces from the source files themselves
-        foreach (var source in Sources)
-        {
-            var path = source.GetMetadata("FullPath");
-            if (string.IsNullOrEmpty(path))
+            string path = GetTaskItemFilePath(sourceFile);
+            if (!File.Exists(path))
             {
-                path = source.ItemSpec;
+                Log.LogWarning($"Source file not found: {path}");
+                continue;
             }
 
-            if (File.Exists(path))
+            List<string> bodyLines = [];
+
+            string[] lines = File.ReadAllLines(path);
+            foreach (string line in lines)
             {
-                var lines = File.ReadAllLines(path);
-                foreach (var line in lines)
+                Match usingMatch = UsingDeclarationRegex().Match(line);
+                if (usingMatch.Success)
                 {
-                    var match = NamespaceDeclarationRegex().Match(line);
-                    if (match.Success)
+                    // Normalize using directive so it does not contain extra spaces.
+                    context.Usings.Add($"using {usingMatch.Groups["using"].Value};");
+                    continue;
+                }
+                else
+                {
+                    Match namespaceMatch = NamespaceDeclarationRegex().Match(line);
+                    if (namespaceMatch.Success)
                     {
-                        // Extract namespace from "namespace X.Y.Z;"
-                        var ns = line.Trim()
-                            .Replace("namespace ", "")
-                            .Replace(";", "")
-                            .Trim();
-                        internalNamespaces.Add(ns);
+                        context.Namespaces.Add(namespaceMatch.Groups["namespace"].Value);
+                    }
+                    else
+                    {
+                        bodyLines.Add(line);
                     }
                 }
             }
+            context.SourceFiles.Add((path, bodyLines));
         }
 
-        foreach (var usingDirective in usings)
+        context.FilterInternalUsings();
+        return context;
+    }
+
+    private void SaveOutput(IEnumerable<string> output)
+    {
+        string? outputFolder = Path.GetDirectoryName(OutputFile);
+        if (!string.IsNullOrWhiteSpace(outputFolder) && !Directory.Exists(outputFolder))
         {
-            var isInternal = false;
-
-            foreach (var ns in internalNamespaces)
-            {
-                // Check if using references this namespace or a sub-namespace
-                // e.g., "using Kros.SingleCsFileGenerator.Demo.DTOs;"
-                if (usingDirective.Contains($"using {ns}") ||
-                    usingDirective.Contains($"using {ns}."))
-                {
-                    isInternal = true;
-                    break;
-                }
-            }
-
-            if (!isInternal)
-            {
-                filtered.Add(usingDirective);
-            }
+            Directory.CreateDirectory(outputFolder);
         }
+        File.WriteAllLines(OutputFile, output);
+    }
 
-        return filtered;
+    private List<string> BuildOutput(SourceContext context)
+    {
+        List<string> output = [];
+        AddSdkDirective(output);
+        AddPackageDirectives(output);
+        AddGeneratedInfo(output);
+        AddUsings(output, context);
+        AddSourceCode(output, context);
+        return output;
+    }
+
+    private void AddSdkDirective(List<string> output)
+    {
+        if (!string.IsNullOrWhiteSpace(ProjectSdk) && !GenerateCSharpSingleFileTask.DefaultSdk.Equals(ProjectSdk))
+        {
+            output.Add($"#:sdk {ProjectSdk}");
+            output.Add(string.Empty);
+        }
+    }
+
+    private void AddPackageDirectives(List<string> output)
+    {
+        bool added = false;
+        foreach (ITaskItem package in PackageReferences)
+        {
+            string packageName = package.ItemSpec;
+
+            // Skip this project package.
+            if (packageName.Equals(ThisProjectPackageName, StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            string version = package.GetMetadata("Version");
+            if (!string.IsNullOrEmpty(version))
+            {
+                output.Add($"#:package {packageName}@{version}");
+            }
+            else
+            {
+                output.Add($"#:package {packageName}");
+            }
+            added = true;
+        }
+        if (added)
+        {
+            output.Add(string.Empty);
+        }
+    }
+
+    private void AddGeneratedInfo(List<string> output)
+    {
+        output.Add($"// Auto-generated single-file .NET application for project {ProjectName}.");
+        output.Add(string.Empty);
+    }
+
+    private static void AddUsings(List<string> output, SourceContext context)
+    {
+        HashSet<string> filteredUsings = context.FilterInternalUsings();
+
+        foreach (string? usingDirective in filteredUsings.OrderBy(u => u, StringComparer.Ordinal))
+        {
+            output.Add(usingDirective);
+        }
+        output.Add(string.Empty);
+    }
+
+    private static void AddSourceCode(List<string> output, SourceContext context)
+    {
+        foreach ((string path, List<string> lines) in context.SourceFiles)
+        {
+            output.Add($"// {path}");
+            output.Add(string.Empty);
+            output.AddRange(lines);
+            output.Add(string.Empty);
+        }
     }
 }

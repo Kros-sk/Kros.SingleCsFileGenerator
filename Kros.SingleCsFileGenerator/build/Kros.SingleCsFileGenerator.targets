@@ -1,40 +1,41 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns = "http://schemas.microsoft.com/developer/msbuild/2003">
 	<UsingTask
-		TaskName="Kros.SingleCsFileGenerator.GenerateCSharpSingleFileTask"
-		AssemblyFile="$(MSBuildThisFileDirectory)net10.0/Kros.SingleCsFileGenerator.dll" />
+		TaskName = "Kros.SingleCsFileGenerator.GenerateCSharpSingleFileTask"
+		AssemblyFile = "$(MSBuildThisFileDirectory)net10.0/Kros.SingleCsFileGenerator.dll" />
 
-	<Target Name="GenerateCSharpSingleFile"
-			AfterTargets="Compile"
-			Condition="'$(GenerateCSharpSingleFile)' == 'true'">
+	<Target Name = "GenerateCSharpSingleFile"
+			AfterTargets = "Compile"
+			Condition = "'$(GenerateCSharpSingleFile)' == 'true'">
 
 		<!-- Set default values for output folder and filename -->
 		<PropertyGroup>
-			<CSharpSingleFileOutputFolder Condition="'$(CSharpSingleFileOutputFolder)' == ''">bin/SingleFile</CSharpSingleFileOutputFolder>
-			<CSharpSingleFileOutputFileName Condition="'$(CSharpSingleFileOutputFileName)' == ''">$(MSBuildProjectName).cs</CSharpSingleFileOutputFileName>
+			<CSharpSingleFileOutputFolder Condition = "'$(CSharpSingleFileOutputFolder)' == ''">bin/SingleFile</CSharpSingleFileOutputFolder>
+			<CSharpSingleFileOutputFileName Condition = "'$(CSharpSingleFileOutputFileName)' == ''">$(MSBuildProjectName).cs</CSharpSingleFileOutputFileName>
 			<_CSharpSingleFileOutputFilePath>$(CSharpSingleFileOutputFolder)/$(CSharpSingleFileOutputFileName)</_CSharpSingleFileOutputFilePath>
 		</PropertyGroup>
 
 		<!-- Determine the SDK type (order matters - more specific SDKs first, then check if empty) -->
 		<PropertyGroup>
-			<_CSharpSingleFileDetectedSdk Condition="'$(UsingMicrosoftNETSdkBlazorWebAssembly)' == 'true'">Microsoft.NET.Sdk.BlazorWebAssembly</_CSharpSingleFileDetectedSdk>
-			<_CSharpSingleFileDetectedSdk Condition="'$(_CSharpSingleFileDetectedSdk)' == '' AND '$(UsingMicrosoftNETSdkWorker)' == 'true'">Microsoft.NET.Sdk.Worker</_CSharpSingleFileDetectedSdk>
-			<_CSharpSingleFileDetectedSdk Condition="'$(_CSharpSingleFileDetectedSdk)' == '' AND '$(UsingMicrosoftNETSdkWeb)' == 'true'">Microsoft.NET.Sdk.Web</_CSharpSingleFileDetectedSdk>
-			<_CSharpSingleFileDetectedSdk Condition="'$(_CSharpSingleFileDetectedSdk)' == '' AND '$(UsingMicrosoftNETSdkRazor)' == 'true'">Microsoft.NET.Sdk.Razor</_CSharpSingleFileDetectedSdk>
-			<_CSharpSingleFileDetectedSdk Condition="'$(_CSharpSingleFileDetectedSdk)' == ''">Microsoft.NET.Sdk</_CSharpSingleFileDetectedSdk>
+			<_CSharpSingleFileDetectedSdk Condition = "'$(UsingMicrosoftNETSdkBlazorWebAssembly)' == 'true'">Microsoft.NET.Sdk.BlazorWebAssembly</_CSharpSingleFileDetectedSdk>
+			<_CSharpSingleFileDetectedSdk Condition = "'$(_CSharpSingleFileDetectedSdk)' == '' AND '$(UsingMicrosoftNETSdkWorker)' == 'true'">Microsoft.NET.Sdk.Worker</_CSharpSingleFileDetectedSdk>
+			<_CSharpSingleFileDetectedSdk Condition = "'$(_CSharpSingleFileDetectedSdk)' == '' AND '$(UsingMicrosoftNETSdkWeb)' == 'true'">Microsoft.NET.Sdk.Web</_CSharpSingleFileDetectedSdk>
+			<_CSharpSingleFileDetectedSdk Condition = "'$(_CSharpSingleFileDetectedSdk)' == '' AND '$(UsingMicrosoftNETSdkRazor)' == 'true'">Microsoft.NET.Sdk.Razor</_CSharpSingleFileDetectedSdk>
+			<_CSharpSingleFileDetectedSdk Condition = "'$(_CSharpSingleFileDetectedSdk)' == ''">Microsoft.NET.Sdk</_CSharpSingleFileDetectedSdk>
 		</PropertyGroup>
 
 		<ItemGroup>
 			<!-- Exclude auto-generated files from obj folder -->
 			<_CSharpSingleFileSources
-				Include="@(Compile)"
-				Condition="!$([System.String]::new('%(FullPath)').Contains('obj'))" />
+				Include = "@(Compile)"
+				Condition = "!$([System.String]::new('%(FullPath)').Contains('obj'))" />
 		</ItemGroup>
 
 		<GenerateCSharpSingleFileTask
-			Sources="@(_CSharpSingleFileSources)"
-			OutputFile="$(_CSharpSingleFileOutputFilePath)"
-			ProjectSdk="$(_CSharpSingleFileDetectedSdk)"
-			PackageReferences="@(PackageReference)"
-			RootNamespace="$(RootNamespace)" />
+			SourceFiles = "@(_CSharpSingleFileSources)"
+			OutputFile = "$(_CSharpSingleFileOutputFilePath)"
+			ProjectSdk = "$(_CSharpSingleFileDetectedSdk)"
+			PackageReferences = "@(PackageReference)"
+			RootNamespace = "$(RootNamespace)"
+			ProjectName = "$(MSBuildProjectName)" />
 	</Target>
 </Project>
