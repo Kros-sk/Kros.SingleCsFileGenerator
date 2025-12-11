@@ -6,17 +6,18 @@ namespace Kros.SingleCsFileGenerator;
 /// <summary>
 /// MSBuild task that merges multiple C# source files into a single file.
 /// </summary>
-public class GenerateCSharpSingleFileTask : Microsoft.Build.Utilities.Task
+public partial class GenerateCSharpSingleFileTask : Microsoft.Build.Utilities.Task
 {
-    private static readonly Regex NamespaceDeclarationRegex = new(
-        @"^\s*namespace\s+[\w.]+\s*;\s*$",
-        RegexOptions.Compiled);
+    private const string DefaultSdk = "Microsoft.NET.Sdk";
+
+    [GeneratedRegex(@"^\s*namespace\s+[\w.]+\s*;\s*$", RegexOptions.Compiled)]
+    private static partial Regex NamespaceDeclarationRegex();
 
     /// <summary>
     /// The source C# files to merge.
     /// </summary>
     [Required]
-    public ITaskItem[] Sources { get; set; } = Array.Empty<ITaskItem>();
+    public ITaskItem[] Sources { get; set; } = [];
 
     /// <summary>
     /// The output file path for the merged C# file.
@@ -27,12 +28,12 @@ public class GenerateCSharpSingleFileTask : Microsoft.Build.Utilities.Task
     /// <summary>
     /// The SDK used by the project (e.g., Microsoft.NET.Sdk.Web).
     /// </summary>
-    public string ProjectSdk { get; set; } = "Microsoft.NET.Sdk";
+    public string ProjectSdk { get; set; } = DefaultSdk;
 
     /// <summary>
     /// The package references from the project.
     /// </summary>
-    public ITaskItem[] PackageReferences { get; set; } = Array.Empty<ITaskItem>();
+    public ITaskItem[] PackageReferences { get; set; } = [];
 
     /// <summary>
     /// The root namespace of the project (used to filter internal usings).
@@ -76,12 +77,12 @@ public class GenerateCSharpSingleFileTask : Microsoft.Build.Utilities.Task
 
                     // Handle regular and global using directives
                     if ((trimmedStart.StartsWith("using ") || trimmedStart.StartsWith("global using "))
-                        && trimmedEnd.EndsWith(";"))
+                        && trimmedEnd.EndsWith(';'))
                     {
                         usings.Add(line.Trim());
                     }
                     // Skip namespace declarations (file-scoped namespaces)
-                    else if (NamespaceDeclarationRegex.IsMatch(line))
+                    else if (NamespaceDeclarationRegex().IsMatch(line))
                     {
                         // Skip namespace declaration
                         continue;
@@ -102,7 +103,7 @@ public class GenerateCSharpSingleFileTask : Microsoft.Build.Utilities.Task
             var outputLines = new List<string>();
 
             // Add SDK directive
-            if (!string.IsNullOrEmpty(ProjectSdk) && ProjectSdk != "Microsoft.NET.Sdk")
+            if (!string.IsNullOrEmpty(ProjectSdk) && ProjectSdk != DefaultSdk)
             {
                 outputLines.Add($"#:sdk {ProjectSdk}");
             }
@@ -206,7 +207,7 @@ public class GenerateCSharpSingleFileTask : Microsoft.Build.Utilities.Task
                 var lines = File.ReadAllLines(path);
                 foreach (var line in lines)
                 {
-                    var match = NamespaceDeclarationRegex.Match(line);
+                    var match = NamespaceDeclarationRegex().Match(line);
                     if (match.Success)
                     {
                         // Extract namespace from "namespace X.Y.Z;"
