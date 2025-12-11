@@ -13,6 +13,7 @@
       <_DetectedSdk Condition="'$(_DetectedSdk)' == '' AND '$(UsingMicrosoftNETSdkWeb)' == 'true'">Microsoft.NET.Sdk.Web</_DetectedSdk>
       <_DetectedSdk Condition="'$(_DetectedSdk)' == '' AND '$(UsingMicrosoftNETSdkRazor)' == 'true'">Microsoft.NET.Sdk.Razor</_DetectedSdk>
       <_DetectedSdk Condition="'$(_DetectedSdk)' == ''">Microsoft.NET.Sdk</_DetectedSdk>
+      <_SingleCSharpOutputFile>$(SingleCSharpOutputFolder)\$(SingleCSharpOutputFileName)</_SingleCSharpOutputFile>
     </PropertyGroup>
 
     <ItemGroup>
@@ -23,7 +24,7 @@
 
     <MergeCSharpFilesTask
         Sources="@(SingleCsFileSources)"
-        OutputFile="$(SingleCSharpOutputFile)"
+        OutputFile="$(_SingleCSharpOutputFile)"
         ProjectSdk="$(_DetectedSdk)"
         PackageReferences="@(PackageReference)"
         RootNamespace="$(RootNamespace)" />

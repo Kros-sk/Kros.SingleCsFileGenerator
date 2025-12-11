@@ -19,8 +19,26 @@ Enable the task in your `.csproj` file:
 ```xml
 <PropertyGroup>
   <ProduceSingleCSharpFile>true</ProduceSingleCSharpFile>
-  <SingleCSharpOutputFile>$(MSBuildProjectDirectory)\app.gen.cs</SingleCSharpOutputFile>
 </PropertyGroup>
 ```
 
 The task runs automatically after compilation and generates a single file containing all your C# source files with namespaces removed and using statements consolidated.
+
+By default, the output file is generated at `bin\SingleFile\{ProjectName}.cs`. For example, project `Kros.App` will produce `bin\SingleFile\Kros.App.cs`.
+
+### Custom Output Location
+
+You can customize the output folder and/or filename:
+
+```xml
+<PropertyGroup>
+  <ProduceSingleCSharpFile>true</ProduceSingleCSharpFile>
+  <SingleCSharpOutputFolder>custom\path</SingleCSharpOutputFolder>
+  <SingleCSharpOutputFileName>MyScript.cs</SingleCSharpOutputFileName>
+</PropertyGroup>
+```
+
+| Property | Default Value | Description |
+|----------|---------------|-------------|
+| `SingleCSharpOutputFolder` | `bin\SingleFile` | Output directory for the generated file |
+| `SingleCSharpOutputFileName` | `{ProjectName}.cs` | Name of the generated file |
