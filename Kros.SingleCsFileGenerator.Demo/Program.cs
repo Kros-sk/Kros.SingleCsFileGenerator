@@ -7,8 +7,7 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddOpenApi();
 
 builder.Services.AddSingleton<IProductRepository, InMemoryProductRepository>();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
@@ -16,11 +15,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 var app = builder.Build();
 
-
-app.UseSwagger(options =>
-{
-    options.RouteTemplate = "openapi/{documentName}.json";
-});
+app.MapOpenApi();
 app.MapScalarApiReference();
 
 var products = app.MapGroup("/api/products")
@@ -31,8 +26,7 @@ products.MapGet("/", async (IMediator mediator) =>
     var result = await mediator.Send(new GetAllProductsQuery());
     return Results.Ok(result);
 })
-.WithName("GetAllProducts")
-.WithOpenApi();
+.WithName("GetAllProducts");
 
 products.MapGet("/{id:int}", async (int id, IMediator mediator) =>
 {
@@ -41,8 +35,7 @@ products.MapGet("/{id:int}", async (int id, IMediator mediator) =>
         ? Results.Ok(result)
         : Results.NotFound();
 })
-.WithName("GetProductById")
-.WithOpenApi();
+.WithName("GetProductById");
 
 products.MapPost("/", async (CreateProductRequest request, IMediator mediator, IValidator<CreateProductCommand> validator) =>
 {
@@ -61,7 +54,6 @@ products.MapPost("/", async (CreateProductRequest request, IMediator mediator, I
     var result = await mediator.Send(command);
     return Results.Created($"/api/products/{result.Id}", result);
 })
-.WithName("CreateProduct")
-.WithOpenApi();
+.WithName("CreateProduct");
 
 app.Run();
