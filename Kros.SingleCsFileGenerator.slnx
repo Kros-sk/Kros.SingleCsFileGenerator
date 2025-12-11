@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+    <File Path="build.cs" />
+    <File Path="nuget.config" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="Kros.SingleCsFileGenerator.Demo/Kros.SingleCsFileGenerator.Demo.csproj" />
+  <Project Path="Kros.SingleCsFileGenerator/Kros.SingleCsFileGenerator.csproj" />
+</Solution>
