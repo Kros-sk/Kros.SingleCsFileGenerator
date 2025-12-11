@@ -5,6 +5,16 @@
   <Target Name="ProduceSingleCSharpFile"
           AfterTargets="Compile"
           Condition="'$(ProduceSingleCSharpFile)' == 'true'">
+
+    <!-- Determine the SDK type (order matters - more specific SDKs first, then check if empty) -->
+    <PropertyGroup>
+      <_DetectedSdk Condition="'$(UsingMicrosoftNETSdkBlazorWebAssembly)' == 'true'">Microsoft.NET.Sdk.BlazorWebAssembly</_DetectedSdk>
+      <_DetectedSdk Condition="'$(_DetectedSdk)' == '' AND '$(UsingMicrosoftNETSdkWorker)' == 'true'">Microsoft.NET.Sdk.Worker</_DetectedSdk>
+      <_DetectedSdk Condition="'$(_DetectedSdk)' == '' AND '$(UsingMicrosoftNETSdkWeb)' == 'true'">Microsoft.NET.Sdk.Web</_DetectedSdk>
+      <_DetectedSdk Condition="'$(_DetectedSdk)' == '' AND '$(UsingMicrosoftNETSdkRazor)' == 'true'">Microsoft.NET.Sdk.Razor</_DetectedSdk>
+      <_DetectedSdk Condition="'$(_DetectedSdk)' == ''">Microsoft.NET.Sdk</_DetectedSdk>
+    </PropertyGroup>
+
     <ItemGroup>
       <!-- Exclude auto-generated files from obj folder -->
       <SingleCsFileSources Include="@(Compile)" 
@@ -13,7 +23,9 @@
 
     <MergeCSharpFilesTask
         Sources="@(SingleCsFileSources)"
-        OutputFile="$(SingleCSharpOutputFile)" />
+        OutputFile="$(SingleCSharpOutputFile)"
+        ProjectSdk="$(_DetectedSdk)"
+        PackageReferences="@(PackageReference)"
+        RootNamespace="$(RootNamespace)" />
   </Target>
 </Project>
-
