@@ -1,15 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
 using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
+using System.Text.RegularExpressions;
 
 namespace Kros.SingleCsFileGenerator;
 
 /// <summary>
-/// MSBuild task that merges multiple C# source files into a single amalgamated file.
+/// MSBuild task that merges multiple C# source files into a single file.
 /// </summary>
 public class MergeCSharpFilesTask : Microsoft.Build.Utilities.Task
 {
@@ -140,7 +135,7 @@ public class MergeCSharpFilesTask : Microsoft.Build.Utilities.Task
             }
 
             // Add header comments
-            outputLines.Add("// Auto-generated single-file amalgamation");
+            outputLines.Add("// Auto-generated single-file.");
             outputLines.Add("// Sources:");
 
             foreach (var (path, _) in fileContents)
