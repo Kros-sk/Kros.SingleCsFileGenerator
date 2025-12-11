@@ -1,0 +1,19 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <UsingTask TaskName="Kros.SingleCsFileGenerator.MergeCSharpFilesTask"
+             AssemblyFile="$(MSBuildThisFileDirectory)net8.0\Kros.SingleCsFileGenerator.dll" />
+
+  <Target Name="ProduceSingleCSharpFile"
+          AfterTargets="Compile"
+          Condition="'$(ProduceSingleCSharpFile)' == 'true'">
+    <ItemGroup>
+      <!-- Exclude auto-generated files from obj folder -->
+      <SingleCsFileSources Include="@(Compile)" 
+                           Condition="!$([System.String]::new('%(FullPath)').Contains('obj'))" />
+    </ItemGroup>
+
+    <MergeCSharpFilesTask
+        Sources="@(SingleCsFileSources)"
+        OutputFile="$(SingleCSharpOutputFile)" />
+  </Target>
+</Project>
+

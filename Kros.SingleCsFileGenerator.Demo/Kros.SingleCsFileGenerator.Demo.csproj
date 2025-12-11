@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <ProduceSingleCSharpFile>true</ProduceSingleCSharpFile>
+    <SingleCSharpOutputFile>$(MSBuildProjectDirectory)\app.gen.cs</SingleCSharpOutputFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="app.gen.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Kros.SingleCsFileGenerator" Version="0.1.0" />
+    <PackageReference Include="MediatR" Version="12.4.1" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.10.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.11" />
+    <PackageReference Include="Scalar.AspNetCore" Version="1.2.74" />
+  </ItemGroup>
+
+</Project>

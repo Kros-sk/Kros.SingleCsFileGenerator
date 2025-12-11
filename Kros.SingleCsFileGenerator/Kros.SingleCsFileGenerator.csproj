@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <!-- NuGet package settings -->
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <PackageId>Kros.SingleCsFileGenerator</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>KROS a.s.</Authors>
+    <Description>MSBuild task that merges multiple C# source files into a single amalgamated file.</Description>
+    <PackageOutputPath>$(MSBuildThisFileDirectory)..\nupkg</PackageOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.11.48" />
+  </ItemGroup>
+
+  <!-- Include task DLL in build/net8.0 folder -->
+  <ItemGroup>
+    <None Include="$(OutputPath)Kros.SingleCsFileGenerator.dll" Pack="true" PackagePath="build/net8.0/" />
+    <None Include="build\Kros.SingleCsFileGenerator.props" Pack="true" PackagePath="build/" />
+    <None Include="build\Kros.SingleCsFileGenerator.targets" Pack="true" PackagePath="build/" />
+  </ItemGroup>
+
+</Project>
