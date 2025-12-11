@@ -1,6 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <UsingTask TaskName="Kros.SingleCsFileGenerator.MergeCSharpFilesTask"
-             AssemblyFile="$(MSBuildThisFileDirectory)net8.0\Kros.SingleCsFileGenerator.dll" />
+             AssemblyFile="$(MSBuildThisFileDirectory)net10.0\Kros.SingleCsFileGenerator.dll" />
 
   <Target Name="ProduceSingleCSharpFile"
           AfterTargets="Compile"
