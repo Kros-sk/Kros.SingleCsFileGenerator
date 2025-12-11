@@ -8,8 +8,8 @@ MSBuild task that merges multiple C# source files into a single amalgamated file
 
 Add the NuGet package to your project:
 
-```xml
-<PackageReference Include="Kros.SingleCsFileGenerator" Version="0.1.0" />
+```bash
+dotnet package add Kros.SingleCsFileGenerator
 ```
 
 ## Usage
