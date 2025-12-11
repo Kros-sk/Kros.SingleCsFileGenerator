@@ -7,10 +7,10 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <ProduceSingleCSharpFile>true</ProduceSingleCSharpFile>
+    <GenerateCSharpSingleFile>true</GenerateCSharpSingleFile>
    <!--
-      <SingleCSharpOutputFileName>MyScript.cs</SingleCSharpOutputFileName>
-      <SingleCSharpOutputFolder>$(MSBuildProjectDirectory)</SingleCSharpOutputFolder>
+      <CSharpSingleFileOutputFileName>MyScript.cs</CSharpSingleFileOutputFileName>
+      <CSharpSingleFileOutputFolder>$(MSBuildProjectDirectory)</CSharpSingleFileOutputFolder>
     -->
   </PropertyGroup>
 

@@ -6,7 +6,7 @@ namespace Kros.SingleCsFileGenerator;
 /// <summary>
 /// MSBuild task that merges multiple C# source files into a single file.
 /// </summary>
-public class MergeCSharpFilesTask : Microsoft.Build.Utilities.Task
+public class GenerateCSharpSingleFileTask : Microsoft.Build.Utilities.Task
 {
     private static readonly Regex NamespaceDeclarationRegex = new(
         @"^\s*namespace\s+[\w.]+\s*;\s*$",
