@@ -6,6 +6,13 @@
           AfterTargets="Compile"
           Condition="'$(ProduceSingleCSharpFile)' == 'true'">
 
+    <!-- Set default values for output folder and filename -->
+    <PropertyGroup>
+      <SingleCSharpOutputFolder Condition="'$(SingleCSharpOutputFolder)' == ''">bin\SingleFile</SingleCSharpOutputFolder>
+      <SingleCSharpOutputFileName Condition="'$(SingleCSharpOutputFileName)' == ''">$(MSBuildProjectName).cs</SingleCSharpOutputFileName>
+      <_SingleCSharpOutputFile>$(SingleCSharpOutputFolder)\$(SingleCSharpOutputFileName)</_SingleCSharpOutputFile>
+    </PropertyGroup>
+
     <!-- Determine the SDK type (order matters - more specific SDKs first, then check if empty) -->
     <PropertyGroup>
       <_DetectedSdk Condition="'$(UsingMicrosoftNETSdkBlazorWebAssembly)' == 'true'">Microsoft.NET.Sdk.BlazorWebAssembly</_DetectedSdk>
@@ -13,7 +20,6 @@
       <_DetectedSdk Condition="'$(_DetectedSdk)' == '' AND '$(UsingMicrosoftNETSdkWeb)' == 'true'">Microsoft.NET.Sdk.Web</_DetectedSdk>
       <_DetectedSdk Condition="'$(_DetectedSdk)' == '' AND '$(UsingMicrosoftNETSdkRazor)' == 'true'">Microsoft.NET.Sdk.Razor</_DetectedSdk>
       <_DetectedSdk Condition="'$(_DetectedSdk)' == ''">Microsoft.NET.Sdk</_DetectedSdk>
-      <_SingleCSharpOutputFile>$(SingleCSharpOutputFolder)\$(SingleCSharpOutputFileName)</_SingleCSharpOutputFile>
     </PropertyGroup>
 
     <ItemGroup>

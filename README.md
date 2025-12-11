@@ -42,3 +42,13 @@ You can customize the output folder and/or filename:
 |----------|---------------|-------------|
 | `SingleCSharpOutputFolder` | `bin\SingleFile` | Output directory for the generated file |
 | `SingleCSharpOutputFileName` | `{ProjectName}.cs` | Name of the generated file |
+
+## Development
+
+To test local changes, run the build script:
+
+```bash
+dotnet run build.cs
+```
+
+This script rebuilds the NuGet package, clears the cache, and builds the Demo project. The package is automatically built to `./nupkg` folder (configured in `nuget.config` as local feed).

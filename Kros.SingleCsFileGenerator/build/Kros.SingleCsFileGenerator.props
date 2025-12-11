@@ -1,8 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProduceSingleCSharpFile Condition="'$(ProduceSingleCSharpFile)' == ''">false</ProduceSingleCSharpFile>
-    <SingleCSharpOutputFolder Condition="'$(SingleCSharpOutputFolder)' == ''">bin\SingleFile</SingleCSharpOutputFolder>
-    <SingleCSharpOutputFileName Condition="'$(SingleCSharpOutputFileName)' == ''">$(MSBuildProjectName).cs</SingleCSharpOutputFileName>
   </PropertyGroup>
 </Project>
 
