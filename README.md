@@ -52,3 +52,9 @@ dotnet run build.cs
 ```
 
 This script rebuilds the NuGet package, clears the cache, and builds the Demo project. The package is automatically built to `./nupkg` folder (configured in `nuget.config` as local feed).
+
+---
+
+## ⚠️ Disclaimer
+
+This project is a **proof of concept**. The entire codebase was generated using AI. Use at your own risk. 🙂
