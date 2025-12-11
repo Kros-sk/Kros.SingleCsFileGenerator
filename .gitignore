@@ -49,6 +49,3 @@ project.fragment.lock.json
 Thumbs.db
 ehthumbs.db
 Desktop.ini
-
-# Generated files
-*.gen.cs

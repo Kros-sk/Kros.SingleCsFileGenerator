@@ -8,12 +8,11 @@
 
   <PropertyGroup>
     <ProduceSingleCSharpFile>true</ProduceSingleCSharpFile>
-    <SingleCSharpOutputFile>$(MSBuildProjectDirectory)\app.gen.cs</SingleCSharpOutputFile>
+   <!--
+      <SingleCSharpOutputFileName>MyScript.cs</SingleCSharpOutputFileName>
+      <SingleCSharpOutputFolder>$(MSBuildProjectDirectory)</SingleCSharpOutputFolder>
+    -->
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="app.gen.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Kros.SingleCsFileGenerator" Version="0.1.0" />
