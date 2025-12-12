@@ -12,10 +12,12 @@
 		<Authors>KROS a. s.</Authors>
 		<Description>MSBuild task that merges multiple C# source files into a single file.</Description>
 		<PackageOutputPath>$(MSBuildThisFileDirectory)../nupkg</PackageOutputPath>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<VersionPrefix>0.2.0</VersionPrefix>
+		<VersionPrefix>0.2.1</VersionPrefix>
 		<VersionSuffix></VersionSuffix>
 	</PropertyGroup>
 
@@ -28,6 +30,7 @@
 		<None Include="$(OutputPath)Kros.SingleCsFileGenerator.dll" Pack="true" PackagePath="build/" />
 		<None Include="build\Kros.SingleCsFileGenerator.props" Pack="true" PackagePath="build/" />
 		<None Include="build\Kros.SingleCsFileGenerator.targets" Pack="true" PackagePath="build/" />
+		<None Include="..\README.md" Pack="true" PackagePath="/" />
 	</ItemGroup>
 
 </Project>
