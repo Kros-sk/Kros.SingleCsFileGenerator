@@ -14,10 +14,11 @@
 		<PackageOutputPath>$(MSBuildThisFileDirectory)../nupkg</PackageOutputPath>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>logo.png</PackageIcon>
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<VersionPrefix>1.0.0</VersionPrefix>
+		<VersionPrefix>1.0.1</VersionPrefix>
 		<VersionSuffix></VersionSuffix>
 	</PropertyGroup>
 
@@ -28,9 +29,10 @@
 	<!-- Include task DLL in build folder -->
 	<ItemGroup>
 		<None Include="$(OutputPath)Kros.SingleCsFileGenerator.dll" Pack="true" PackagePath="build/" />
-		<None Include="build\Kros.SingleCsFileGenerator.props" Pack="true" PackagePath="build/" />
-		<None Include="build\Kros.SingleCsFileGenerator.targets" Pack="true" PackagePath="build/" />
-		<None Include="..\README.md" Pack="true" PackagePath="/" />
+		<None Include="build/Kros.SingleCsFileGenerator.props" Pack="true" PackagePath="build/" />
+		<None Include="build/Kros.SingleCsFileGenerator.targets" Pack="true" PackagePath="build/" />
+		<None Include="../README.md" Pack="true" PackagePath="/" />
+		<None Include="../logo.png" Pack="true" PackagePath="/" />
 	</ItemGroup>
 
 </Project>
