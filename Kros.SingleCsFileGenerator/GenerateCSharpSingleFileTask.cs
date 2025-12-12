@@ -1,4 +1,8 @@
 using Microsoft.Build.Framework;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Kros.SingleCsFileGenerator;
@@ -26,8 +30,8 @@ public partial class GenerateCSharpSingleFileTask : Microsoft.Build.Utilities.Ta
                 foreach (string ns in Namespaces)
                 {
                     // Check if using references this namespace or a sub-namespace.
-                    if (usingDirective.Contains($"using {ns};", StringComparison.Ordinal)
-                        || usingDirective.Contains($"using {ns}.", StringComparison.Ordinal))
+                    if ((usingDirective.IndexOf($"using {ns};") >= 0)
+                        || (usingDirective.IndexOf($"using {ns}.") >= 0))
                     {
                         isInternal = true;
                         break;
@@ -50,11 +54,8 @@ public partial class GenerateCSharpSingleFileTask : Microsoft.Build.Utilities.Ta
     private const string DefaultSdk = "Microsoft.NET.Sdk";
     private const string ProgramCsFileName = "Program.cs";
 
-    [GeneratedRegex(@"^\s*namespace\s+(?<namespace>[\w.]+)\s*;\s*$", RegexOptions.Compiled)]
-    private static partial Regex NamespaceDeclarationRegex();
-
-    [GeneratedRegex(@"^\s*(global\s+)?using\s+(?<using>[\w.]+)\s*;\s*$", RegexOptions.Compiled)]
-    private static partial Regex UsingDeclarationRegex();
+    private static readonly Regex _namespaceDeclarationRegex = new(@"^\s*namespace\s+(?<namespace>[\w.]+)\s*;\s*$", RegexOptions.Compiled);
+    private static readonly Regex _usingDeclarationRegex = new(@"^\s*(global\s+)?using\s+(?<using>[\w.]+)\s*;\s*$", RegexOptions.Compiled);
 
     /// <summary>
     /// Name of the project which is converted to single file.
@@ -137,7 +138,7 @@ public partial class GenerateCSharpSingleFileTask : Microsoft.Build.Utilities.Ta
             string[] lines = File.ReadAllLines(path);
             foreach (string line in lines)
             {
-                Match usingMatch = UsingDeclarationRegex().Match(line);
+                Match usingMatch = _usingDeclarationRegex.Match(line);
                 if (usingMatch.Success)
                 {
                     // Normalize using directive so it does not contain extra spaces.
@@ -146,7 +147,7 @@ public partial class GenerateCSharpSingleFileTask : Microsoft.Build.Utilities.Ta
                 }
                 else
                 {
-                    Match namespaceMatch = NamespaceDeclarationRegex().Match(line);
+                    Match namespaceMatch = _namespaceDeclarationRegex.Match(line);
                     if (namespaceMatch.Success)
                     {
                         context.Namespaces.Add(namespaceMatch.Groups["namespace"].Value);
@@ -177,7 +178,8 @@ public partial class GenerateCSharpSingleFileTask : Microsoft.Build.Utilities.Ta
                 }
                 lastNonEmptyLineIndex--;
             }
-            context.SourceFiles.Add((path, bodyLines[firstNonEmptyLineIndex..(lastNonEmptyLineIndex + 1)]));
+            context.SourceFiles.Add((path,
+                bodyLines.GetRange(firstNonEmptyLineIndex, lastNonEmptyLineIndex - firstNonEmptyLineIndex + 1)));
         }
 
         context.FilterInternalUsings();

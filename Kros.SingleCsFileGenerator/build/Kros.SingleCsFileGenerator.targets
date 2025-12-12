@@ -1,7 +1,7 @@
 <Project xmlns = "http://schemas.microsoft.com/developer/msbuild/2003">
 	<UsingTask
 		TaskName = "Kros.SingleCsFileGenerator.GenerateCSharpSingleFileTask"
-		AssemblyFile = "$(MSBuildThisFileDirectory)net10.0/Kros.SingleCsFileGenerator.dll" />
+		AssemblyFile = "$(MSBuildThisFileDirectory)Kros.SingleCsFileGenerator.dll" />
 
 	<Target Name = "GenerateCSharpSingleFile"
 			AfterTargets = "Compile"

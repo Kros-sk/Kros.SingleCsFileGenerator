@@ -13,7 +13,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Kros.SingleCsFileGenerator" Version="0.1.0" />
+		<PackageReference Include="Kros.SingleCsFileGenerator" Version="*-*" />
 		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
 		<PackageReference Include="Mediator.Abstractions" Version="3.0.1" />
 		<PackageReference Include="Mediator.SourceGenerator" Version="3.0.1">
