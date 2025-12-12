@@ -88,6 +88,12 @@ public partial class GenerateCSharpSingleFileTask : Microsoft.Build.Utilities.Ta
     /// </summary>
     public string RootNamespace { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Enables trimming feature of .NET b.uild. Trimming is disabled by default, because for single file
+    /// applications it is a source of errors. For example with JSON serialization, or when using source generators.
+    /// </summary>
+    public bool EnableTrimming { get; set; } = false;
+
     public override bool Execute()
     {
         try
@@ -198,6 +204,7 @@ public partial class GenerateCSharpSingleFileTask : Microsoft.Build.Utilities.Ta
     {
         List<string> output = [];
         AddSdkDirective(output);
+        AddProperties(output);
         AddPackageDirectives(output);
         AddGeneratedInfo(output);
         AddUsings(output, context);
@@ -212,6 +219,12 @@ public partial class GenerateCSharpSingleFileTask : Microsoft.Build.Utilities.Ta
             output.Add($"#:sdk {ProjectSdk}");
             output.Add(string.Empty);
         }
+    }
+
+    private void AddProperties(List<string> output)
+    {
+        output.Add($"#:property PublishTrimmed={EnableTrimming}");
+        output.Add(string.Empty);
     }
 
     private void AddPackageDirectives(List<string> output)

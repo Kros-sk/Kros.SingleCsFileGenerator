@@ -20,13 +20,20 @@ Argument<FileInfo> outputArgument = new(name: "output")
     Description = "Path where single-file application will be generated."
 };
 
+Option<bool> enableTrimmingOption = new("--enableTrimming")
+{
+    Arity = ArgumentArity.ZeroOrOne,
+    Description = "If set, trimming is enabled. Default is disabled."
+};
+
 RootCommand rootCommand = new("Generates single-file application from given C# .NET project.")
 {
     projectArgument,
-    outputArgument
+    outputArgument,
+    enableTrimmingOption
 };
 
-rootCommand.Action = new ProjectCommandAction(projectArgument, outputArgument);
+rootCommand.Action = new ProjectCommandAction(projectArgument, outputArgument, enableTrimmingOption);
 
 return rootCommand.Parse(args).Invoke();
 
@@ -55,7 +62,8 @@ static class ExitCodes
 
 sealed class ProjectCommandAction(
     Argument<FileInfo> projectArgument,
-    Argument<FileInfo> outputArgument)
+    Argument<FileInfo> outputArgument,
+    Option<bool> enableTrimmingOption)
     : SynchronousCommandLineAction
 {
     private sealed class TaskItem(string itemSpec, string version) : ITaskItem
@@ -110,6 +118,7 @@ sealed class ProjectCommandAction(
         (string sdk, string rootNamespace, ITaskItem[] packageReferences, ITaskItem[] sourceFiles)
             = LoadProjectData(projectFile, root);
 
+        bool enableTrimming = parseResult.GetValue(enableTrimmingOption);
         GenerateCSharpSingleFileTask generator = new()
         {
             ProjectName = Path.GetFileNameWithoutExtension(projectFile.Name),
@@ -118,6 +127,7 @@ sealed class ProjectCommandAction(
             PackageReferences = packageReferences,
             SourceFiles = sourceFiles,
             OutputFile = outputFile.FullName,
+            EnableTrimming = enableTrimming,
             BuildEngine = new DummyBuildEngine()
         };
 

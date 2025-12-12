@@ -36,6 +36,7 @@
 			ProjectSdk = "$(_CSharpSingleFileDetectedSdk)"
 			PackageReferences = "@(PackageReference)"
 			RootNamespace = "$(RootNamespace)"
-			ProjectName = "$(MSBuildProjectName)" />
+			ProjectName = "$(MSBuildProjectName)"
+			EnableTrimming = "$(CSharpSingleFileEnableTrimming)" />
 	</Target>
 </Project>
