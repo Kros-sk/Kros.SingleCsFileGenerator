@@ -2,7 +2,7 @@ using FluentValidation;
 using Kros.SingleCsFileGenerator.Demo.DTOs;
 using Kros.SingleCsFileGenerator.Demo.Models;
 using Kros.SingleCsFileGenerator.Demo.Repositories;
-using MediatR;
+using Mediator;
 
 namespace Kros.SingleCsFileGenerator.Demo.Features.Products;
 
@@ -34,7 +34,7 @@ public class CreateProductValidator : AbstractValidator<CreateProductCommand>
 public class CreateProductHandler(IProductRepository repository)
     : IRequestHandler<CreateProductCommand, ProductDto>
 {
-    public async Task<ProductDto> Handle(
+    public async ValueTask<ProductDto> Handle(
         CreateProductCommand request,
         CancellationToken cancellationToken)
     {

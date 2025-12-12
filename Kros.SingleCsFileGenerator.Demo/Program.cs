@@ -2,7 +2,7 @@ using FluentValidation;
 using Kros.SingleCsFileGenerator.Demo.DTOs;
 using Kros.SingleCsFileGenerator.Demo.Features.Products;
 using Kros.SingleCsFileGenerator.Demo.Repositories;
-using MediatR;
+using Mediator;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,7 +10,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 
 builder.Services.AddSingleton<IProductRepository, InMemoryProductRepository>();
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
+builder.Services.AddMediator(opt =>
+{
+    opt.Namespace = "Kros.SingleCsFileGenerator.Demo.Mediator";
+    opt.ServiceLifetime = ServiceLifetime.Singleton;
+    opt.GenerateTypesAsInternal = true;
+});
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 var app = builder.Build();

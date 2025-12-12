@@ -1,6 +1,6 @@
 using Kros.SingleCsFileGenerator.Demo.DTOs;
 using Kros.SingleCsFileGenerator.Demo.Repositories;
-using MediatR;
+using Mediator;
 
 namespace Kros.SingleCsFileGenerator.Demo.Features.Products;
 
@@ -9,7 +9,7 @@ public record GetAllProductsQuery : IRequest<IEnumerable<ProductDto>>;
 public class GetAllProductsHandler(IProductRepository repository)
     : IRequestHandler<GetAllProductsQuery, IEnumerable<ProductDto>>
 {
-    public async Task<IEnumerable<ProductDto>> Handle(
+    public async ValueTask<IEnumerable<ProductDto>> Handle(
         GetAllProductsQuery request,
         CancellationToken cancellationToken)
     {

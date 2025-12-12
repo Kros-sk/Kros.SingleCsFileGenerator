@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Kros.SingleCsFileGenerator.Demo": {
+      "commandName": "Project",
+      "launchBrowser": false,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:63759;http://localhost:63760"
+    }
+  }
+}
