@@ -117,7 +117,7 @@ public partial class GenerateCSharpSingleFileTask : Microsoft.Build.Utilities.Ta
 
     private List<ITaskItem> SortSourceFiles()
         => SourceFiles
-            .OrderBy(s => ProgramCsFileName.Equals(GetTaskItemFileName(s), StringComparison.OrdinalIgnoreCase) ? 1 : 0)
+            .OrderBy(s => ProgramCsFileName.Equals(GetTaskItemFileName(s), StringComparison.OrdinalIgnoreCase) ? 0 : 1)
             .ToList();
 
     private SourceContext LoadSourceFiles(IEnumerable<ITaskItem> sourceFiles)
@@ -157,7 +157,27 @@ public partial class GenerateCSharpSingleFileTask : Microsoft.Build.Utilities.Ta
                     }
                 }
             }
-            context.SourceFiles.Add((path, bodyLines));
+
+            // Remove empty lines at the begining and the end.
+            int firstNonEmptyLineIndex = 0;
+            foreach (string line in bodyLines)
+            {
+                if (!string.IsNullOrWhiteSpace(line))
+                {
+                    break;
+                }
+                firstNonEmptyLineIndex++;
+            }
+            int lastNonEmptyLineIndex = bodyLines.Count - 1;
+            for (int i = bodyLines.Count - 1; i >= 0; i--)
+            {
+                if (!string.IsNullOrWhiteSpace(bodyLines[i]))
+                {
+                    break;
+                }
+                lastNonEmptyLineIndex--;
+            }
+            context.SourceFiles.Add((path, bodyLines[firstNonEmptyLineIndex..(lastNonEmptyLineIndex + 1)]));
         }
 
         context.FilterInternalUsings();
