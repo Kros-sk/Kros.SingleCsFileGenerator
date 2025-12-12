@@ -1,29 +1,28 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <GenerateCSharpSingleFile>false</GenerateCSharpSingleFile>
-   <!--
-      <CSharpSingleFileOutputFileName>MyScript.cs</CSharpSingleFileOutputFileName>
-      <CSharpSingleFileOutputFolder>$(MSBuildProjectDirectory)</CSharpSingleFileOutputFolder>
-    -->
-  </PropertyGroup>
+	<PropertyGroup>
+		<GenerateCSharpSingleFile>true</GenerateCSharpSingleFile>
+		<!--<CSharpSingleFileOutputFileName>MyScript.cs</CSharpSingleFileOutputFileName>-->
+		<!--<CSharpSingleFileOutputFolder>$(MSBuildProjectDirectory)</CSharpSingleFileOutputFolder>-->
+		<!--<CSharpSingleFileEnableTrimming>false</CSharpSingleFileEnableTrimming>-->
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Kros.SingleCsFileGenerator" Version="0.1.0" />
-    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
-    <PackageReference Include="Mediator.Abstractions" Version="3.0.1" />
-    <PackageReference Include="Mediator.SourceGenerator" Version="3.0.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.1" />
-    <PackageReference Include="Scalar.AspNetCore" Version="2.11.5" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Kros.SingleCsFileGenerator" Version="0.1.0" />
+		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+		<PackageReference Include="Mediator.Abstractions" Version="3.0.1" />
+		<PackageReference Include="Mediator.SourceGenerator" Version="3.0.1">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.1" />
+		<PackageReference Include="Scalar.AspNetCore" Version="2.11.5" />
+	</ItemGroup>
 
 </Project>

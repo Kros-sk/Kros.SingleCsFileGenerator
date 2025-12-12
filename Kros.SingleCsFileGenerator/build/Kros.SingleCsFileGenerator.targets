@@ -27,7 +27,7 @@
 			<!-- Exclude auto-generated files from obj folder -->
 			<_CSharpSingleFileSources
 				Include = "@(Compile)"
-				Condition = "!$([System.String]::new('%(FullPath)').Contains('obj'))" />
+				Condition = "!$([System.String]::new('%(FullPath)').Contains('/obj/')) AND !$([System.String]::new('%(FullPath)').Contains('\obj\'))" />
 		</ItemGroup>
 
 		<GenerateCSharpSingleFileTask
