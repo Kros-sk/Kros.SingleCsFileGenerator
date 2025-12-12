@@ -210,7 +210,7 @@ public partial class GenerateCSharpSingleFileTask : Microsoft.Build.Utilities.Ta
 
     private void AddSdkDirective(List<string> output)
     {
-        if (!string.IsNullOrWhiteSpace(ProjectSdk) && !GenerateCSharpSingleFileTask.DefaultSdk.Equals(ProjectSdk))
+        if (!string.IsNullOrWhiteSpace(ProjectSdk) && !DefaultSdk.Equals(ProjectSdk))
         {
             output.Add($"#:sdk {ProjectSdk}");
             output.Add(string.Empty);
