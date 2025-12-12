@@ -10,7 +10,6 @@
 		<GenerateCSharpSingleFile>true</GenerateCSharpSingleFile>
 		<!--<CSharpSingleFileOutputFileName>MyScript.cs</CSharpSingleFileOutputFileName>-->
 		<!--<CSharpSingleFileOutputFolder>$(MSBuildProjectDirectory)</CSharpSingleFileOutputFolder>-->
-		<!--<CSharpSingleFileEnableTrimming>false</CSharpSingleFileEnableTrimming>-->
 	</PropertyGroup>
 
 	<ItemGroup>
