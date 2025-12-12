@@ -5,7 +5,7 @@
     <File Path="README.md" />
   </Folder>
   <Folder Name="/devops/">
-    <File Path="devops/build-and-publish.yml" />
+    <File Path=".github/workflows/build-and-publish.yml" />
   </Folder>
   <Project Path="Kros.SingleCsFileGenerator.Demo/Kros.SingleCsFileGenerator.Demo.csproj" />
   <Project Path="Kros.SingleCsFileGenerator.Runner/Kros.SingleCsFileGenerator.Runner.csproj" Id="3b35bc1d-cfd5-47b1-ad5a-e67d7fb4fa44" />
