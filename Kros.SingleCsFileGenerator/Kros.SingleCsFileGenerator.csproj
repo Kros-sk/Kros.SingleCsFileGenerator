@@ -4,21 +4,26 @@
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-
-		<!-- NuGet package settings -->
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<IncludeBuildOutput>false</IncludeBuildOutput>
-		<PackageId>Kros.SingleCsFileGenerator</PackageId>
-		<Authors>KROS a. s.</Authors>
-		<Description>MSBuild task that merges multiple C# source files into a single file.</Description>
-		<PackageOutputPath>$(MSBuildThisFileDirectory)../nupkg</PackageOutputPath>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageIcon>logo.png</PackageIcon>
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<VersionPrefix>1.0.1</VersionPrefix>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<IncludeBuildOutput>false</IncludeBuildOutput>
+		<PackageOutputPath>$(MSBuildThisFileDirectory)../nupkg</PackageOutputPath>
+		<PackageId>Kros.SingleCsFileGenerator</PackageId>
+		<Description>MSBuild task that merges multiple C# source files into a single file. Just reference the library and add property &lt;GenerateCSharpSingleFile&gt;true&lt;/GenerateCSharpSingleFile&gt; to your project file. Your project will be merged as single-file app in 'bin/SingleFileSingle' folder.</Description>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>logo.png</PackageIcon>
+		<PackageProjectUrl>https://github.com/Kros-sk/Kros.SingleCsFileGenerator</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/Kros-sk/Kros.SingleCsFileGenerator.git</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>msbuild;source-generator;code-merge;csharp;single-file</PackageTags>
+		<Authors>KROS a. s.</Authors>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<VersionPrefix>1.0.2</VersionPrefix>
 		<VersionSuffix></VersionSuffix>
 	</PropertyGroup>
 
